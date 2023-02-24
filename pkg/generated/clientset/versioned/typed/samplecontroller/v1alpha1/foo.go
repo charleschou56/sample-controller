@@ -20,14 +20,17 @@ package v1alpha1
 
 import (
 	"context"
+	json "encoding/json"
+	"fmt"
+	v1alpha1 "sample-controller/pkg/apis/samplecontroller/v1alpha1"
+	samplecontrollerv1alpha1 "sample-controller/pkg/generated/applyconfiguration/samplecontroller/v1alpha1"
+	scheme "sample-controller/pkg/generated/clientset/versioned/scheme"
 	"time"
 
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	watch "k8s.io/apimachinery/pkg/watch"
 	rest "k8s.io/client-go/rest"
-	v1alpha1 "k8s.io/sample-controller/pkg/apis/samplecontroller/v1alpha1"
-	scheme "k8s.io/sample-controller/pkg/generated/clientset/versioned/scheme"
 )
 
 // FoosGetter has a method to return a FooInterface.
@@ -47,6 +50,8 @@ type FooInterface interface {
 	List(ctx context.Context, opts v1.ListOptions) (*v1alpha1.FooList, error)
 	Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error)
 	Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.Foo, err error)
+	Apply(ctx context.Context, foo *samplecontrollerv1alpha1.FooApplyConfiguration, opts v1.ApplyOptions) (result *v1alpha1.Foo, err error)
+	ApplyStatus(ctx context.Context, foo *samplecontrollerv1alpha1.FooApplyConfiguration, opts v1.ApplyOptions) (result *v1alpha1.Foo, err error)
 	FooExpansion
 }
 
@@ -188,6 +193,62 @@ func (c *foos) Patch(ctx context.Context, name string, pt types.PatchType, data 
 		Name(name).
 		SubResource(subresources...).
 		VersionedParams(&opts, scheme.ParameterCodec).
+		Body(data).
+		Do(ctx).
+		Into(result)
+	return
+}
+
+// Apply takes the given apply declarative configuration, applies it and returns the applied foo.
+func (c *foos) Apply(ctx context.Context, foo *samplecontrollerv1alpha1.FooApplyConfiguration, opts v1.ApplyOptions) (result *v1alpha1.Foo, err error) {
+	if foo == nil {
+		return nil, fmt.Errorf("foo provided to Apply must not be nil")
+	}
+	patchOpts := opts.ToPatchOptions()
+	data, err := json.Marshal(foo)
+	if err != nil {
+		return nil, err
+	}
+	name := foo.Name
+	if name == nil {
+		return nil, fmt.Errorf("foo.Name must be provided to Apply")
+	}
+	result = &v1alpha1.Foo{}
+	err = c.client.Patch(types.ApplyPatchType).
+		Namespace(c.ns).
+		Resource("foos").
+		Name(*name).
+		VersionedParams(&patchOpts, scheme.ParameterCodec).
+		Body(data).
+		Do(ctx).
+		Into(result)
+	return
+}
+
+// ApplyStatus was generated because the type contains a Status member.
+// Add a +genclient:noStatus comment above the type to avoid generating ApplyStatus().
+func (c *foos) ApplyStatus(ctx context.Context, foo *samplecontrollerv1alpha1.FooApplyConfiguration, opts v1.ApplyOptions) (result *v1alpha1.Foo, err error) {
+	if foo == nil {
+		return nil, fmt.Errorf("foo provided to Apply must not be nil")
+	}
+	patchOpts := opts.ToPatchOptions()
+	data, err := json.Marshal(foo)
+	if err != nil {
+		return nil, err
+	}
+
+	name := foo.Name
+	if name == nil {
+		return nil, fmt.Errorf("foo.Name must be provided to Apply")
+	}
+
+	result = &v1alpha1.Foo{}
+	err = c.client.Patch(types.ApplyPatchType).
+		Namespace(c.ns).
+		Resource("foos").
+		Name(*name).
+		SubResource("status").
+		VersionedParams(&patchOpts, scheme.ParameterCodec).
 		Body(data).
 		Do(ctx).
 		Into(result)

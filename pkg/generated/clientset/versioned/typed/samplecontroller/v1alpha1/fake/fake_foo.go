@@ -20,13 +20,16 @@ package fake
 
 import (
 	"context"
+	json "encoding/json"
+	"fmt"
+	v1alpha1 "sample-controller/pkg/apis/samplecontroller/v1alpha1"
+	samplecontrollerv1alpha1 "sample-controller/pkg/generated/applyconfiguration/samplecontroller/v1alpha1"
 
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	labels "k8s.io/apimachinery/pkg/labels"
 	types "k8s.io/apimachinery/pkg/types"
 	watch "k8s.io/apimachinery/pkg/watch"
 	testing "k8s.io/client-go/testing"
-	v1alpha1 "k8s.io/sample-controller/pkg/apis/samplecontroller/v1alpha1"
 )
 
 // FakeFoos implements FooInterface
@@ -133,6 +136,51 @@ func (c *FakeFoos) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, 
 func (c *FakeFoos) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.Foo, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewPatchSubresourceAction(foosResource, c.ns, name, pt, data, subresources...), &v1alpha1.Foo{})
+
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*v1alpha1.Foo), err
+}
+
+// Apply takes the given apply declarative configuration, applies it and returns the applied foo.
+func (c *FakeFoos) Apply(ctx context.Context, foo *samplecontrollerv1alpha1.FooApplyConfiguration, opts v1.ApplyOptions) (result *v1alpha1.Foo, err error) {
+	if foo == nil {
+		return nil, fmt.Errorf("foo provided to Apply must not be nil")
+	}
+	data, err := json.Marshal(foo)
+	if err != nil {
+		return nil, err
+	}
+	name := foo.Name
+	if name == nil {
+		return nil, fmt.Errorf("foo.Name must be provided to Apply")
+	}
+	obj, err := c.Fake.
+		Invokes(testing.NewPatchSubresourceAction(foosResource, c.ns, *name, types.ApplyPatchType, data), &v1alpha1.Foo{})
+
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*v1alpha1.Foo), err
+}
+
+// ApplyStatus was generated because the type contains a Status member.
+// Add a +genclient:noStatus comment above the type to avoid generating ApplyStatus().
+func (c *FakeFoos) ApplyStatus(ctx context.Context, foo *samplecontrollerv1alpha1.FooApplyConfiguration, opts v1.ApplyOptions) (result *v1alpha1.Foo, err error) {
+	if foo == nil {
+		return nil, fmt.Errorf("foo provided to Apply must not be nil")
+	}
+	data, err := json.Marshal(foo)
+	if err != nil {
+		return nil, err
+	}
+	name := foo.Name
+	if name == nil {
+		return nil, fmt.Errorf("foo.Name must be provided to Apply")
+	}
+	obj, err := c.Fake.
+		Invokes(testing.NewPatchSubresourceAction(foosResource, c.ns, *name, types.ApplyPatchType, data, "status"), &v1alpha1.Foo{})
 
 	if obj == nil {
 		return nil, err

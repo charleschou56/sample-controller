@@ -20,6 +20,9 @@ package externalversions
 
 import (
 	reflect "reflect"
+	versioned "sample-controller/pkg/generated/clientset/versioned"
+	internalinterfaces "sample-controller/pkg/generated/informers/externalversions/internalinterfaces"
+	samplecontroller "sample-controller/pkg/generated/informers/externalversions/samplecontroller"
 	sync "sync"
 	time "time"
 
@@ -27,9 +30,6 @@ import (
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	cache "k8s.io/client-go/tools/cache"
-	versioned "k8s.io/sample-controller/pkg/generated/clientset/versioned"
-	internalinterfaces "k8s.io/sample-controller/pkg/generated/informers/externalversions/internalinterfaces"
-	samplecontroller "k8s.io/sample-controller/pkg/generated/informers/externalversions/samplecontroller"
 )
 
 // SharedInformerOption defines the functional option type for SharedInformerFactory.
