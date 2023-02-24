@@ -27,7 +27,7 @@ SCRIPT_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 "${SCRIPT_ROOT}/generate-groups.sh" all \
   sample-controller/pkg/generated \
   sample-controller/pkg/apis \
-  "samplecontroller:v1alpha1" \
+  "samplecontroller:v1alpha1 cnat:v1alpha1" \
   --output-base "$(dirname "${BASH_SOURCE[0]}")/../.." \
   --go-header-file "${SCRIPT_ROOT}/hack/boilerplate.go.txt"
 
