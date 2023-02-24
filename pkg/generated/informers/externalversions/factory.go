@@ -21,6 +21,7 @@ package externalversions
 import (
 	reflect "reflect"
 	versioned "sample-controller/pkg/generated/clientset/versioned"
+	cnat "sample-controller/pkg/generated/informers/externalversions/cnat"
 	internalinterfaces "sample-controller/pkg/generated/informers/externalversions/internalinterfaces"
 	samplecontroller "sample-controller/pkg/generated/informers/externalversions/samplecontroller"
 	sync "sync"
@@ -243,7 +244,12 @@ type SharedInformerFactory interface {
 	// client.
 	InformerFor(obj runtime.Object, newFunc internalinterfaces.NewInformerFunc) cache.SharedIndexInformer
 
+	Cnat() cnat.Interface
 	Samplecontroller() samplecontroller.Interface
+}
+
+func (f *sharedInformerFactory) Cnat() cnat.Interface {
+	return cnat.New(f, f.namespace, f.tweakListOptions)
 }
 
 func (f *sharedInformerFactory) Samplecontroller() samplecontroller.Interface {

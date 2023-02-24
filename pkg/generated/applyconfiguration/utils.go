@@ -19,8 +19,10 @@ limitations under the License.
 package applyconfiguration
 
 import (
-	v1alpha1 "sample-controller/pkg/apis/samplecontroller/v1alpha1"
-	samplecontrollerv1alpha1 "sample-controller/pkg/generated/applyconfiguration/samplecontroller/v1alpha1"
+	v1alpha1 "sample-controller/pkg/apis/cnat/v1alpha1"
+	samplecontrollerv1alpha1 "sample-controller/pkg/apis/samplecontroller/v1alpha1"
+	cnatv1alpha1 "sample-controller/pkg/generated/applyconfiguration/cnat/v1alpha1"
+	applyconfigurationsamplecontrollerv1alpha1 "sample-controller/pkg/generated/applyconfiguration/samplecontroller/v1alpha1"
 
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 )
@@ -29,13 +31,21 @@ import (
 // apply configuration type exists for the given GroupVersionKind.
 func ForKind(kind schema.GroupVersionKind) interface{} {
 	switch kind {
-	// Group=samplecontroller.k8s.io, Version=v1alpha1
-	case v1alpha1.SchemeGroupVersion.WithKind("Foo"):
-		return &samplecontrollerv1alpha1.FooApplyConfiguration{}
-	case v1alpha1.SchemeGroupVersion.WithKind("FooSpec"):
-		return &samplecontrollerv1alpha1.FooSpecApplyConfiguration{}
-	case v1alpha1.SchemeGroupVersion.WithKind("FooStatus"):
-		return &samplecontrollerv1alpha1.FooStatusApplyConfiguration{}
+	// Group=cnat.programming-kubernetes.info, Version=v1alpha1
+	case v1alpha1.SchemeGroupVersion.WithKind("At"):
+		return &cnatv1alpha1.AtApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("AtSpec"):
+		return &cnatv1alpha1.AtSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("AtStatus"):
+		return &cnatv1alpha1.AtStatusApplyConfiguration{}
+
+		// Group=samplecontroller.k8s.io, Version=v1alpha1
+	case samplecontrollerv1alpha1.SchemeGroupVersion.WithKind("Foo"):
+		return &applyconfigurationsamplecontrollerv1alpha1.FooApplyConfiguration{}
+	case samplecontrollerv1alpha1.SchemeGroupVersion.WithKind("FooSpec"):
+		return &applyconfigurationsamplecontrollerv1alpha1.FooSpecApplyConfiguration{}
+	case samplecontrollerv1alpha1.SchemeGroupVersion.WithKind("FooStatus"):
+		return &applyconfigurationsamplecontrollerv1alpha1.FooStatusApplyConfiguration{}
 
 	}
 	return nil

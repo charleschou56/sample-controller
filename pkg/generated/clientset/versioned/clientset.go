@@ -21,6 +21,7 @@ package versioned
 import (
 	"fmt"
 	"net/http"
+	cnatv1alpha1 "sample-controller/pkg/generated/clientset/versioned/typed/cnat/v1alpha1"
 	samplecontrollerv1alpha1 "sample-controller/pkg/generated/clientset/versioned/typed/samplecontroller/v1alpha1"
 
 	discovery "k8s.io/client-go/discovery"
@@ -30,13 +31,20 @@ import (
 
 type Interface interface {
 	Discovery() discovery.DiscoveryInterface
+	CnatV1alpha1() cnatv1alpha1.CnatV1alpha1Interface
 	SamplecontrollerV1alpha1() samplecontrollerv1alpha1.SamplecontrollerV1alpha1Interface
 }
 
 // Clientset contains the clients for groups.
 type Clientset struct {
 	*discovery.DiscoveryClient
+	cnatV1alpha1             *cnatv1alpha1.CnatV1alpha1Client
 	samplecontrollerV1alpha1 *samplecontrollerv1alpha1.SamplecontrollerV1alpha1Client
+}
+
+// CnatV1alpha1 retrieves the CnatV1alpha1Client
+func (c *Clientset) CnatV1alpha1() cnatv1alpha1.CnatV1alpha1Interface {
+	return c.cnatV1alpha1
 }
 
 // SamplecontrollerV1alpha1 retrieves the SamplecontrollerV1alpha1Client
@@ -88,6 +96,10 @@ func NewForConfigAndClient(c *rest.Config, httpClient *http.Client) (*Clientset,
 
 	var cs Clientset
 	var err error
+	cs.cnatV1alpha1, err = cnatv1alpha1.NewForConfigAndClient(&configShallowCopy, httpClient)
+	if err != nil {
+		return nil, err
+	}
 	cs.samplecontrollerV1alpha1, err = samplecontrollerv1alpha1.NewForConfigAndClient(&configShallowCopy, httpClient)
 	if err != nil {
 		return nil, err
@@ -113,6 +125,7 @@ func NewForConfigOrDie(c *rest.Config) *Clientset {
 // New creates a new Clientset for the given RESTClient.
 func New(c rest.Interface) *Clientset {
 	var cs Clientset
+	cs.cnatV1alpha1 = cnatv1alpha1.New(c)
 	cs.samplecontrollerV1alpha1 = samplecontrollerv1alpha1.New(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClient(c)

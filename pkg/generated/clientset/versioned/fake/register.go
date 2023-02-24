@@ -19,6 +19,7 @@ limitations under the License.
 package fake
 
 import (
+	cnatv1alpha1 "sample-controller/pkg/apis/cnat/v1alpha1"
 	samplecontrollerv1alpha1 "sample-controller/pkg/apis/samplecontroller/v1alpha1"
 
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -32,6 +33,7 @@ var scheme = runtime.NewScheme()
 var codecs = serializer.NewCodecFactory(scheme)
 
 var localSchemeBuilder = runtime.SchemeBuilder{
+	cnatv1alpha1.AddToScheme,
 	samplecontrollerv1alpha1.AddToScheme,
 }
 
