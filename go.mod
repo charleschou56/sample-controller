@@ -1,6 +1,6 @@
 // This is a generated file. Do not edit directly.
 
-module k8s.io/sample-controller
+module sample-controller
 
 go 1.19
 
