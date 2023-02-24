@@ -20,8 +20,8 @@ set -o pipefail
 
 SCRIPT_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 
-DIFFROOT="${SCRIPT_ROOT}/pkg"
-TMP_DIFFROOT="${SCRIPT_ROOT}/_tmp/pkg"
+DIFFROOT="${SCRIPT_ROOT}/examples"
+TMP_DIFFROOT="${SCRIPT_ROOT}/_tmp/examples"
 _tmp="${SCRIPT_ROOT}/_tmp"
 
 cleanup() {
@@ -46,3 +46,12 @@ else
   echo "${DIFFROOT} is out of date. Please run hack/update-codegen.sh"
   exit 1
 fi
+
+# smoke test
+echo "Smoke testing examples by compiling..."
+pushd "./${SCRIPT_ROOT}/examples"
+  go build "k8s.io/code-generator/examples/crd/..."
+  go build "k8s.io/code-generator/examples/apiserver/..."
+  go build "k8s.io/code-generator/examples/MixedCase/..."
+  go build "k8s.io/code-generator/examples/HyphenGroup/..."
+popd

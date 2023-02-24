@@ -19,18 +19,33 @@ set -o nounset
 set -o pipefail
 
 SCRIPT_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
-CODEGEN_PKG=${CODEGEN_PKG:-$(cd "${SCRIPT_ROOT}"; ls -d -1 ./vendor/k8s.io/code-generator 2>/dev/null || echo ../code-generator)}
 
 # generate the code with:
-# --output-base    because this script should also be able to run inside the vendor dir of
-#                  k8s.io/kubernetes. The output-base is needed for the generators to output into the vendor dir
-#                  instead of the $GOPATH directly. For normal projects this can be dropped.
-"${CODEGEN_PKG}/generate-groups.sh" "deepcopy,client,informer,lister" \
-  k8s.io/sample-controller/pkg/generated \
-  k8s.io/sample-controller/pkg/apis \
-  samplecontroller:v1alpha1 \
+# - --output-base because this script should also be able to run inside the vendor dir of
+#   k8s.io/kubernetes. The output-base is needed for the generators to output into the vendor dir
+#   instead of the $GOPATH directly. For normal projects this can be dropped.
+"${SCRIPT_ROOT}/generate-internal-groups.sh" all \
+  k8s.io/code-generator/examples/apiserver \
+  k8s.io/code-generator/examples/apiserver/apis \
+  k8s.io/code-generator/examples/apiserver/apis \
+  "example:v1 example2:v1 example3.io:v1" \
   --output-base "$(dirname "${BASH_SOURCE[0]}")/../../.." \
-  --go-header-file "${SCRIPT_ROOT}"/hack/boilerplate.go.txt
-
-# To use your own boilerplate text append:
-#   --go-header-file "${SCRIPT_ROOT}"/hack/custom-boilerplate.go.txt
+  --go-header-file "${SCRIPT_ROOT}/hack/boilerplate.go.txt"
+"${SCRIPT_ROOT}/generate-groups.sh" all \
+  k8s.io/code-generator/examples/crd \
+  k8s.io/code-generator/examples/crd/apis \
+  "example:v1 example2:v1" \
+  --output-base "$(dirname "${BASH_SOURCE[0]}")/../../.." \
+  --go-header-file "${SCRIPT_ROOT}/hack/boilerplate.go.txt"
+"${SCRIPT_ROOT}/generate-groups.sh" all \
+  k8s.io/code-generator/examples/MixedCase \
+  k8s.io/code-generator/examples/MixedCase/apis \
+  "example:v1" \
+  --output-base "$(dirname "${BASH_SOURCE[0]}")/../../.." \
+  --go-header-file "${SCRIPT_ROOT}/hack/boilerplate.go.txt"
+"${SCRIPT_ROOT}/generate-groups.sh" all \
+  k8s.io/code-generator/examples/HyphenGroup \
+  k8s.io/code-generator/examples/HyphenGroup/apis \
+  "example:v1" \
+  --output-base "$(dirname "${BASH_SOURCE[0]}")/../../.." \
+  --go-header-file "${SCRIPT_ROOT}/hack/boilerplate.go.txt"
