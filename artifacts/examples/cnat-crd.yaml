@@ -6,6 +6,29 @@ spec:
   group: cnat.programming-kubernetes.info
   versions:
     - name: v1alpha1
+      served: true
+      storage: true
+      schema:
+        # schema used for validation
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                schedule:
+                  type: string
+                command:
+                  type: string
+            status:
+              type: object
+              properties:
+                phase:
+                  type: string
+      # subresources for the custom resource
+      subresources:
+        # enables the status subresource
+        status: {}
   names:
     kind: At
     plural: ats

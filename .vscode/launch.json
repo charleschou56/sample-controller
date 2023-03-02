@@ -1,0 +1,28 @@
+{
+    // 使用 IntelliSense 以得知可用的屬性。
+    // 暫留以檢視現有屬性的描述。
+    // 如需詳細資訊，請瀏覽: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Connect and launch",
+            "type": "go",
+            "debugAdapter": "dlv-dap", // the default
+            "request": "launch",
+            "port": 12345,
+            "host": "192.168.40.59", // can skip for localhost
+            "mode": "exec",
+            "program": "/home/mars/03_dev/sample-controller/cnat-controller",
+            "args": [
+                "-kubeconfig",
+                "/home/mars/.kube/config"
+            ],
+            "substitutePath": [
+                {
+                    "from": "${workspaceFolder}",
+                    "to": "/home/mars/03_dev/sample-controller/"
+                },
+            ]
+        }
+    ]
+}
